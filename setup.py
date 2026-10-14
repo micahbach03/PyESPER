@@ -5,11 +5,17 @@ with open("README.md", "r") as f:
 
 setup(
     name="PyESPER",
-    version="1.1.1",
+    version="1.1.1+cworthy.1",
     description="Python version of ESPERv1",
     author="LMD",
     author_email="lmdias@uw.edu",
-    packages=["PyESPER"],
+    # find_packages() picks up PyESPER, PyESPER.kernels, PyESPER.tests and the
+    # NeuralNetworks weight package (all have __init__.py). Note a plain (wheel)
+    # install still does NOT carry the Mat_fullgrid/ .mat grids -- they are 288 MB
+    # and live outside any package. Use an editable install (pip install -e .),
+    # which maps back to this source tree so PyESPER.paths.data_root() finds them
+    # automatically, or set PYESPER_DATA_DIR. See PyESPER/paths.py.
+    packages=find_packages(),
     package_data={
         "PyESPER": ["*.csv"],
     },
@@ -21,6 +27,11 @@ setup(
         "PyCO2SYS",
         "pandas",
         "numba",
+        # xr_methods (dask-lazy xarray wrappers) and salinity_conditioning (reads the
+        # WOA23 netCDF climatology) -- previously imported without being declared.
+        "xarray",
+        "dask",
+        "netCDF4",
     ],
     entry_points={
         "console_scripts": [
